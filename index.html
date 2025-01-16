@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Pump Fun API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0 15px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        pre {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: "Courier New", Courier, monospace;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            background: #f9f9f9;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background: #fff;
+            border-bottom: 2px solid #fff;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+    <script>
+        function showTab(event, idPrefix, tabName) {
+            const container = document.querySelector(`#${idPrefix}`);
+            const tabs = container.querySelectorAll('.tab');
+            const contents = container.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            container.querySelector(`#${tabName}`).classList.add('active');
+        }
+    </script>
+</head>
+<body>
+    <div id="intro-section" class="container">
+        <div style="display: flex; justify-content: space-between;">
+            <img src="img.png" alt="Easy Pump.Fun API BUY SELL" width="100" height="100">
+            <h1>Easy Pump Fun API Documentation</h1>
+        </div>
+        <br><br>
+        <p>Easiest way to buy and sell on pump.fun! <b>Copy Paste and Run.</b> Focus on your trading algorithm and let Easy Pump Fun handle the rest. Designed with simplicity in mind, it allows you to execute swaps effortlessly just by simply calling the endpoint and providing the necessary parameters. API automatically configures RPC nodes (free for all user), manages all program addresses and token programs, opens and closes token accounts, connects to the bonding curve, handles Compute Units and microLamports, and more.</p>
+        <p><b>ZERO LOG</b> policy ensures that your data stays yours. <b>No tracking. No storage. Ever.</b> To further enhance security, Easy Pump Fun features end-to-end encryption for all requests, IP whitelisting for controlled access (available for subscription plans only) and more.</p>
+        <p><b>FREE RPC NODES.</b> No setup is required. Free users get access to shared RPC nodes, which means the same nodes are utilized by multiple free-tier users. This makes it possible to offer the service at no cost. These nodes can sometimes experience slower response times, especially during peak usage. But it's still faster than https://api.mainnet-beta.solana.com</p>
+        <p>Subscribers get access to <b>dedicated RPC node</b> exclusive to individual account. So there are no bottlenecks caused by other users. Ensuring faster and more reliable performance. Dedicated nodes are automatically assigned to subscribers when they upgrade. No configuration is needed.</p>
+        <p><b>PREMIUM API</b> provides advanced features and benefits including dedicated RPC nodes, even faster transaction processing, token sniping functionality, API uptime guarantees, higher rate limits, access to private beta features, priority support and more. To learn more about these features and how to get started, contact <b>support@easypumpfun.com</b>.</p>
+        <br>
+        <p>And for any other questions feel free to contact <b>support@easypumpfun.com</b></p> 
+    </div>
+    <div id="buy-section" class="container">
+        <h1>1. Buy</h1>
+        <p><strong>Method:</strong> <code>POST</code></p>
+        <pre><code style="font-size: 20px"><b>https://api.easypumpfun.com/buy</b></code></pre>
+        <br>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab(event, 'buy-section', 'python-buy')">Python</div>
+            <div class="tab" onclick="showTab(event, 'buy-section', 'nodejs-buy')">Node.js</div>
+        </div>
+
+        <div id="python-buy" class="tab-content active">
+            <h3>Request Example</h3>
+            <pre><code>
+    import requests
+
+    url = "https://api.easypumpfun.com/buy"
+    data = {
+        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+        "sol_in": 0.5,
+        "slippage": 2,
+        "sol_fee": 0.0001
+    }
+
+    response = requests.post(url, json=data)
+
+    print("Status Code:", response.status_code)
+    print("Response:", response.json())
+            </code></pre>
+        </div>
+
+        <div id="nodejs-buy" class="tab-content">
+            <h3>Request Example</h3>
+            <pre><code>
+    const axios = require('axios');
+
+    const url = "https://api.easypumpfun.com/buy";
+    const data = {
+        keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+        mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+        sol_in: 0.5,
+        slippage: 2,
+        sol_fee: 0.0001
+    };
+
+    axios.post(url, data).then(response => {
+            console.log("Status Code:", response.status);
+            console.log("Response:", response.data);
+    });
+            </code></pre>
+        </div>
+    </div>
+
+    <div id="sell-section" class="container">
+        <h1>2. SELL</h1>
+        <p><strong>Method:</strong> <code>POST</code></p>
+        <pre><code style="font-size: 20px"><b>https://api.easypumpfun.com/sell</b></code></pre>
+        <br>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab(event, 'sell-section', 'python-sell')">Python</div>
+            <div class="tab" onclick="showTab(event, 'sell-section', 'nodejs-sell')">Node.js</div>
+        </div>
+
+        <div id="python-sell" class="tab-content active">
+            <h3>Request Example</h3>
+            <pre><code>
+    import requests
+
+    url = "https://api.easypumpfun.com/sell"
+    data = {
+        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+        "percentage": 75,
+        "slippage": 2,
+        "sol_fee": 0.0001
+    }
+
+    response = requests.post(url, json=data)
+
+    print("Status Code:", response.status_code)
+    print("Response:", response.json())
+            </code></pre>
+        </div>
+
+        <div id="nodejs-sell" class="tab-content">
+            <h3>Request Example</h3>
+            <pre><code>
+    const axios = require('axios');
+
+    const url = "https://api.easypumpfun.com/sell";
+    const data = {
+        keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+        mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+        percentage: 75,
+        slippage: 2,
+        sol_fee: 0.0001
+    };
+
+    axios.post(url, data).then(response => {
+            console.log("Status Code:", response.status);
+            console.log("Response:", response.data);
+    });
+            </code></pre>
+        </div>
+    </div>
+    <div id="yappin-section" class="container">
+        <h1>3. Responses</h1>
+        <h3>3.1 Response status code</h3>
+        <pre><code>    Status Code: 200</code></pre>
+        <p>A response status code <code><b>200</b></code> means the API is functioning correctly and handling requests as expected. Any other status code indicates an issue with the API. Even if the status code is <code><b>200</b></code> the transaction can still fail. This indicates that the API is functioning correctly but the transaction failed due to an incorrect setup or another issue.</p>
+        <br>
+        <h3>3.2 Response Body</h3>
+        <pre><code>
+    { 
+        'failed': {
+            'message': None,
+            'status': False
+        },
+        'signature': '4ci6dTW6D6ocnKiT8qzD9Bg89wpWx5KeXW2h8JTqeZfk6zKF81AbYUnKuEcTQmdma7Q2mBnutZEW89ZCYpADfzo1'
+    }
+        </code></pre>
+
+        <p><b>failed</b> - This field provides information about whether the transaction failed. It contains two subfields.</p>
+        <ul>
+            <li><p><b>message</b> - A description of the issue if the transaction failed. If transaction succeeds it's None.</p></li>
+            <li><p><b>status</b> - A boolean indicating if the transaction failed. If False the transaction did not fail. If True the transaction failed.</p></li>
+        </ul>
+        <p><b>signature</b> - Hash for the completed transaction. If the transaction fails, this field might still be present if the API successfully processed the request but encountered an issue with the transaction completion.</p>
+        
+        <p><br></p>
+
+        <h1>4. Payload explained</h1>
+        <pre><code>
+    #FOR BUY
+    data = {
+        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+        "sol_in": 0.5,
+        "slippage": 2,
+        "sol_fee": 0.0001
+    }
+            </code></pre>
+            <p>Token CA: <code>9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></p>
+            <p>Buy token for: <code>0.5 SOL</code></p>
+            <p>Slippage: <code>2%</code></p>
+            <p>Fees cost: <code>0.0001 SOL</code></p>
+        <p><br></p>
+        <pre><code>
+    #FOR SELL
+    data = {
+        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+        "percentage": 100,
+        "slippage": 2,
+        "compute": 100_000,
+        "mlamports": 2_000_000
+    }
+            </code></pre>
+            <p>Token CA: <code>9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></p>
+            <p>Sell percentage of token holdings: <code>100%</code></p>
+            <p>Slippage: <code>2%</code></p>
+            <p>Compute Units: <code>100_000</code></p>
+            <p>microLamports: <code>2_000_000</code></p>
+        <p><br></p>
+        
+        <h2>4.1 Wallet and Token</h2>
+        <ul>
+            <li><b>keypair</b> [<i>string</i>] - Your private key for the wallet you want to use. <b>DO NOT SHARE THIS WITH ANYONE!</b> <a href="https://www.youtube.com/watch?v=xS5VllDRyMc&ab_channel=BleepingWorld" target="_blank"><i>How to find you private key in Phantom Wallet.</i></a><br><pre><code>"keypair": 2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7</code></pre></li>
+            <li><b>mint</b> [<i>string</i>] - Token's contract address (CA).<br><pre><code>"mint": 9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></pre></li>
+        </ul>
+        <p><br></p>
+        <h2>4.2 SOL amount</h2>
+        <ul>
+            <li><b>sol_in</b> [<i>float</i>] <i>(for BUY only)</i> - Amount of SOL you want to spend buying the token. <br><pre><code>"sol_in": 0.3 (buy for 0.3 SOL)</code></pre></li>
+            <li><b>percentage</b> [<i>float</i>] <i>(for SELL only)</i> - Percentage of token holdings you want to sell. <br><pre><code>"percentage": 50 (sell 50% of your tokens)</code></pre></li>
+            <li><b>slippage</b> [<i>float</i>] - The acceptable slippage percentage for the transaction. Higher values increase the likelihood of a successful transaction. <br><pre><code>"slippage": 2 (if unsure set it to 2%)</code></pre></li>
+            <p style="color: #999;"><i>Slippage is like agreeing to a small price change while buying or selling. Let's say you set slippage to 0% while buying X amount of tokens for 1 SOL. But by the time your transaction is completed other people might also be buying, which drives the price up. If the price of the token increases by 1% during that time, the cost for X tokens would now be 1.01 SOL. Since your transaction is only set to pay 1 SOL for now 1.01 SOL worth of tokens, it will fail. In the same example if you were to set slippage to 2%, you are basically saying you are willing to pay up to 2% more than 1 SOL for that X amount of tokens. So if the price increases to 1.01 SOL, your transaction will succeed and you will pay 1.01 SOL for X amount of tokens. Notice that you only paid 1% more, meaning not all of the available slippage was used. If the price change is greater than 2%, for example 1.03 SOL, your transaction will still fail. Slippage is essentially like saying you are willing to paying up to 2% more for X tokens to make sure my transaction goes through, even if the price changes while it's being processed. Higher slippage is needed for tokens with a lot of trading activity. But don't set it too high to avoid overpaying. <b>If you didn't understand any of this just set it to 2%</b></i></p>
+        </ul>
+        <p><br></p>
+        <p>All the parameters listed above are <b>required</b> and the API cannot function without them. When determining transaction fee costs you have two options. Either set the fee automatically by specifying the desired amount in SOL. Or configure it manually by providing the Compute Units and microLamports. <b>One of these two methods must be used. Otherwise the transaction cannot be completed without setting up the fees</b></p>
+        <p><br></p>
+        <h2>4.3 Transaction fees</h2>
+        <p><b>Easy Pump Fun API doesn't charge you any fees.</b> However for every transaction you'll pay an additional 1% of the transaction value to Pump Fun (nothing you can do about it). Plus if you're buying a token for the first time a little bit more than 0.002 SOL will be charged to create the token account in your wallet (also nothing you can do about it).</p>
+        <ul>
+            <li><b>sol_fee</b> [<i>float</i>] - Amount of SOL you want to use for fees. It will be added on top of the transaction cost. <br><pre><code>"sol_fee": 0.0001</code></pre></li>
+            <p style="color: #999;"><i>Keep in mind that if you configure fees this way, the actual cost may not be exact but will be approximately around the specified value.</i></p>
+            <li><b>compute</b> [<i>int</i>] - Maximum number of compute units to be used for the transaction. <br><i style="color: #999;">If you set "sol_fee" you don't need to set this.</i> <br><pre><code>"compute": 100_000</code></pre></li>
+            <li><b>mlamports</b> [<i>int</i>] - Cost of a single compute unit in microLamports. <br><i style="color: #999;">If you set "sol_fee" you don't need to set this.</i> <br><pre><code>"mlamports": 2_000_000</code></pre><a href="https://www.quicknode.com/gas-tracker/solana" target="_blank"><i>Priority Fee Tracker</i></a></li>
+        </ul>
+        <p><br></p>
+        
+        <p style="color: #999; text-align: right;"><i>Copyright © 2025 Easy Pump Fun</i></p>
+        
+    </div>
+</body>
+</html>
