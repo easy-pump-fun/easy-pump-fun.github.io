@@ -1,299 +1,667 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Easy Pump Fun API Documentation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0 15px;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-
-        pre {
-            background: #f4f4f4;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
-            overflow-x: auto;
-        }
-
-        code {
-            font-family: "Courier New", Courier, monospace;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid #ddd;
-            margin-bottom: 10px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            background: #f9f9f9;
-            margin-right: 5px;
-        }
-
-        .tab.active {
-            background: #fff;
-            border-bottom: 2px solid #fff;
-            font-weight: bold;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
-        function showTab(event, idPrefix, tabName) {
-            const container = document.querySelector(`#${idPrefix}`);
-            const tabs = container.querySelectorAll('.tab');
-            const contents = container.querySelectorAll('.tab-content');
-
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-
-            event.currentTarget.classList.add('active');
-            container.querySelector(`#${tabName}`).classList.add('active');
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        primary: '#85d2ff',
+                        secondary: '#0f172a',
+                        accent: '#60a5fa',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
         }
     </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(133, 210, 255, 0.1);
+        }
+        .code-block {
+            background: #0d1117;
+            border: 1px solid rgba(133, 210, 255, 0.1);
+        }
+        .tab-active {
+            background: linear-gradient(90deg, #85d2ff 0%, #60a5fa 100%);
+            color: #0f172a;
+            font-weight: 600;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #85d2ff 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .endpoint-badge {
+            background: linear-gradient(90deg, #85d2ff 0%, #60a5fa 100%);
+            color: #0f172a;
+        }
+        .security-badge {
+            background: rgba(133, 210, 255, 0.1);
+            border: 1px solid rgba(133, 210, 255, 0.3);
+            color: #85d2ff;
+        }
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(133, 210, 255, 0.1);
+        }
+        .logo-glow {
+            filter: drop-shadow(0 0 20px rgba(133, 210, 255, 0.3));
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #85d2ff;
+        }
+        .glow-border {
+            box-shadow: 0 0 20px rgba(133, 210, 255, 0.1);
+        }
+    </style>
 </head>
-<body>
-    <div id="intro-section" class="container">
-        <div style="display: flex; justify-content: space-between;">
-            <img src="img.png" alt="Easy Pump.Fun API BUY SELL" width="100" height="100">
-            <h1>Easy Pump Fun API Documentation</h1>
+<body class="antialiased min-h-screen">
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-primary/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <img src="img.png" alt="Easy Pump.Fun API BUY SELL" class="w-12 h-12 object-contain logo-glow rounded-lg">
+                        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full -z-10"></div>
+                    </div>
+                    <div>
+                        <span class="font-bold text-xl tracking-tight text-white block">Easy Pump Fun</span>
+                        <span class="text-xs text-primary/80 font-medium">API Documentation</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#intro" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Overview</a>
+                    <a href="#buy" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Buy API</a>
+                    <a href="#sell" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Sell API</a>
+                    <a href="#responses" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Responses</a>
+                    <a href="#payload" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">Payload</a>
+                </div>
+                    <a href="mailto:support@easypumpfun.com" class="flex items-center gap-2 px-6 py-2 rounded-full bg-primary text-slate-900 font-semibold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/25">
+                        <span>Get Premium</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+            </div>
         </div>
-        <br><br>
-        <p>Easiest way to buy and sell on pump.fun! <b>Copy Paste and Run.</b> Focus on your trading algorithm and let Easy Pump Fun handle the rest. Designed with simplicity in mind, it allows you to execute swaps effortlessly just by simply calling the endpoint and providing the necessary parameters. API automatically configures RPC nodes (free for all user), manages all program addresses and token programs, opens and closes token accounts, connects to the bonding curve, handles Compute Units and microLamports, and more.</p>
-        <p><b>ZERO LOG</b> policy ensures that your data stays yours. <b>No tracking. No storage. Ever.</b> To further enhance security, Easy Pump Fun features end-to-end encryption for all requests, IP whitelisting for controlled access (available for subscription plans only) and more.</p>
-        <p><b>FREE RPC NODES.</b> No setup is required. Free users get access to shared RPC nodes, which means the same nodes are utilized by multiple free-tier users. This makes it possible to offer the service at no cost. These nodes can sometimes experience slower response times, especially during peak usage. But it's still faster than https://api.mainnet-beta.solana.com</p>
-        <p>Subscribers get access to <b>dedicated RPC node</b> exclusive to individual account. So there are no bottlenecks caused by other users. Ensuring faster and more reliable performance. Dedicated nodes are automatically assigned to subscribers when they upgrade. No configuration is needed.</p>
-        <p><b>PREMIUM API</b> provides advanced features and benefits including dedicated RPC nodes, even faster transaction processing, token sniping functionality, API uptime guarantees, higher rate limits, access to private beta features, priority support and more. To learn more about these features and how to get started, contact <b>support@easypumpfun.com</b>.</p>
-        <br>
-        <p>And for any other questions feel free to contact <b>support@easypumpfun.com</b></p> 
-    </div>
-    <div id="buy-section" class="container">
-        <h1>1. Buy</h1>
-        <p><strong>Method:</strong> <code>POST</code></p>
-        <pre><code style="font-size: 20px"><b>https://api.easypumpfun.com/buy</b></code></pre>
-        <br>
+    </nav>
 
-        <div class="tabs">
-            <div class="tab active" onclick="showTab(event, 'buy-section', 'python-buy')">Python</div>
-            <div class="tab" onclick="showTab(event, 'buy-section', 'nodejs-buy')">Node.js</div>
-        </div>
-
-        <div id="python-buy" class="tab-content active">
-            <h3>Request Example</h3>
-            <pre><code>
-    import requests
-
-    url = "https://api.easypumpfun.com/buy"
-    data = {
-        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
-        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
-        "sol_in": 0.5,
-        "slippage": 2,
-        "sol_fee": 0.0001
-    }
-
-    response = requests.post(url, json=data)
-
-    print("Status Code:", response.status_code)
-    print("Response:", response.json())
-            </code></pre>
-        </div>
-
-        <div id="nodejs-buy" class="tab-content">
-            <h3>Request Example</h3>
-            <pre><code>
-    const axios = require('axios');
-
-    const url = "https://api.easypumpfun.com/buy";
-    const data = {
-        keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
-        mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
-        sol_in: 0.5,
-        slippage: 2,
-        sol_fee: 0.0001
-    };
-
-    axios.post(url, data).then(response => {
-            console.log("Status Code:", response.status);
-            console.log("Response:", response.data);
-    });
-            </code></pre>
-        </div>
-    </div>
-
-    <div id="sell-section" class="container">
-        <h1>2. SELL</h1>
-        <p><strong>Method:</strong> <code>POST</code></p>
-        <pre><code style="font-size: 20px"><b>https://api.easypumpfun.com/sell</b></code></pre>
-        <br>
-
-        <div class="tabs">
-            <div class="tab active" onclick="showTab(event, 'sell-section', 'python-sell')">Python</div>
-            <div class="tab" onclick="showTab(event, 'sell-section', 'nodejs-sell')">Node.js</div>
-        </div>
-
-        <div id="python-sell" class="tab-content active">
-            <h3>Request Example</h3>
-            <pre><code>
-    import requests
-
-    url = "https://api.easypumpfun.com/sell"
-    data = {
-        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
-        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
-        "percentage": 75,
-        "slippage": 2,
-        "sol_fee": 0.0001
-    }
-
-    response = requests.post(url, json=data)
-
-    print("Status Code:", response.status_code)
-    print("Response:", response.json())
-            </code></pre>
-        </div>
-
-        <div id="nodejs-sell" class="tab-content">
-            <h3>Request Example</h3>
-            <pre><code>
-    const axios = require('axios');
-
-    const url = "https://api.easypumpfun.com/sell";
-    const data = {
-        keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
-        mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
-        percentage: 75,
-        slippage: 2,
-        sol_fee: 0.0001
-    };
-
-    axios.post(url, data).then(response => {
-            console.log("Status Code:", response.status);
-            console.log("Response:", response.data);
-    });
-            </code></pre>
-        </div>
-    </div>
-    <div id="yappin-section" class="container">
-        <h1>3. Responses</h1>
-        <h3>3.1 Response status code</h3>
-        <pre><code>    Status Code: 200</code></pre>
-        <p>A response status code <code><b>200</b></code> means the API is functioning correctly and handling requests as expected. Any other status code indicates an issue with the API. Even if the status code is <code><b>200</b></code> the transaction can still fail. This indicates that the API is functioning correctly but the transaction failed due to an incorrect setup or another issue.</p>
-        <br>
-        <h3>3.2 Response Body</h3>
-        <pre><code>
-    { 
-        'failed': {
-            'message': None,
-            'status': False
-        },
-        'signature': '4ci6dTW6D6ocnKiT8qzD9Bg89wpWx5KeXW2h8JTqeZfk6zKF81AbYUnKuEcTQmdma7Q2mBnutZEW89ZCYpADfzo1'
-    }
-        </code></pre>
-
-        <p><b>failed</b> - This field provides information about whether the transaction failed. It contains two subfields.</p>
-        <ul>
-            <li><p><b>message</b> - A description of the issue if the transaction failed. If transaction succeeds it's None.</p></li>
-            <li><p><b>status</b> - A boolean indicating if the transaction failed. If False the transaction did not fail. If True the transaction failed.</p></li>
-        </ul>
-        <p><b>signature</b> - Hash for the completed transaction. If the transaction fails, this field might still be present if the API successfully processed the request but encountered an issue with the transaction completion.</p>
+    <section id="intro" class="pt-36 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent pointer-events-none"></div>
         
-        <p><br></p>
+        <div class="max-w-5xl mx-auto text-center animate-slide-up">
+            <div class="mb-10 flex justify-center">
+                <div class="relative">
+                    <img src="img.png" alt="Easy Pump.Fun API BUY SELL" class="w-32 h-32 object-contain logo-glow rounded-2xl">
+                    <div class="absolute inset-0 bg-primary/30 blur-3xl rounded-full -z-10 animate-pulse-slow"></div>
+                </div>
+            </div>
 
-        <h1>4. Payload explained</h1>
-        <pre><code>
-    #FOR BUY
-    data = {
-        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
-        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
-        "sol_in": 0.5,
-        "slippage": 2,
-        "sol_fee": 0.0001
-    }
-            </code></pre>
-            <p>Token CA: <code>9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></p>
-            <p>Buy token for: <code>0.5 SOL</code></p>
-            <p>Slippage: <code>2%</code></p>
-            <p>Fees cost: <code>0.0001 SOL</code></p>
-        <p><br></p>
-        <pre><code>
-    #FOR SELL
-    data = {
-        "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
-        "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
-        "percentage": 100,
-        "slippage": 2,
-        "compute": 100_000,
-        "mlamports": 2_000_000
-    }
-            </code></pre>
-            <p>Token CA: <code>9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></p>
-            <p>Sell percentage of token holdings: <code>100%</code></p>
-            <p>Slippage: <code>2%</code></p>
-            <p>Compute Units: <code>100_000</code></p>
-            <p>microLamports: <code>2_000_000</code></p>
-        <p><br></p>
-        
-        <h2>4.1 Wallet and Token</h2>
-        <ul>
-            <li><b>keypair</b> [<i>string</i>] - Your private key for the wallet you want to use. <b>DO NOT SHARE THIS WITH ANYONE!</b> <a href="https://www.youtube.com/watch?v=xS5VllDRyMc&ab_channel=BleepingWorld" target="_blank"><i>How to find you private key in Phantom Wallet.</i></a><br><pre><code>"keypair": 2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7</code></pre></li>
-            <li><b>mint</b> [<i>string</i>] - Token's contract address (CA).<br><pre><code>"mint": 9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></pre></li>
-        </ul>
-        <p><br></p>
-        <h2>4.2 SOL amount</h2>
-        <ul>
-            <li><b>sol_in</b> [<i>float</i>] <i>(for BUY only)</i> - Amount of SOL you want to spend buying the token. <br><pre><code>"sol_in": 0.3 (buy for 0.3 SOL)</code></pre></li>
-            <li><b>percentage</b> [<i>float</i>] <i>(for SELL only)</i> - Percentage of token holdings you want to sell. <br><pre><code>"percentage": 50 (sell 50% of your tokens)</code></pre></li>
-            <li><b>slippage</b> [<i>float</i>] - The acceptable slippage percentage for the transaction. Higher values increase the likelihood of a successful transaction. <br><pre><code>"slippage": 2 (if unsure set it to 2%)</code></pre></li>
-            <p style="color: #999;"><i>Slippage is like agreeing to a small price change while buying or selling. Let's say you set slippage to 0% while buying X amount of tokens for 1 SOL. But by the time your transaction is completed other people might also be buying, which drives the price up. If the price of the token increases by 1% during that time, the cost for X tokens would now be 1.01 SOL. Since your transaction is only set to pay 1 SOL for now 1.01 SOL worth of tokens, it will fail. In the same example if you were to set slippage to 2%, you are basically saying you are willing to pay up to 2% more than 1 SOL for that X amount of tokens. So if the price increases to 1.01 SOL, your transaction will succeed and you will pay 1.01 SOL for X amount of tokens. Notice that you only paid 1% more, meaning not all of the available slippage was used. If the price change is greater than 2%, for example 1.03 SOL, your transaction will still fail. Slippage is essentially like saying you are willing to paying up to 2% more for X tokens to make sure my transaction goes through, even if the price changes while it's being processed. Higher slippage is needed for tokens with a lot of trading activity. But don't set it too high to avoid overpaying. <b>If you didn't understand any of this just set it to 2%</b></i></p>
-        </ul>
-        <p><br></p>
-        <p>All the parameters listed above are <b>required</b> and the API cannot function without them. When determining transaction fee costs you have two options. Either set the fee automatically by specifying the desired amount in SOL. Or configure it manually by providing the Compute Units and microLamports. <b>One of these two methods must be used. Otherwise the transaction cannot be completed without setting up the fees</b></p>
-        <p><br></p>
-        <h2>4.3 Transaction fees</h2>
-        <p><b>Easy Pump Fun API doesn't charge you any fees.</b> However for every transaction you'll pay an additional 1% of the transaction value to Pump Fun (nothing you can do about it). Plus if you're buying a token for the first time a little bit more than 0.002 SOL will be charged to create the token account in your wallet (also nothing you can do about it).</p>
-        <ul>
-            <li><b>sol_fee</b> [<i>float</i>] - Amount of SOL you want to use for fees. It will be added on top of the transaction cost. <br><pre><code>"sol_fee": 0.0001</code></pre></li>
-            <p style="color: #999;"><i>Keep in mind that if you configure fees this way, the actual cost may not be exact but will be approximately around the specified value.</i></p>
-            <li><b>compute</b> [<i>int</i>] - Maximum number of compute units to be used for the transaction. <br><i style="color: #999;">If you set "sol_fee" you don't need to set this.</i> <br><pre><code>"compute": 100_000</code></pre></li>
-            <li><b>mlamports</b> [<i>int</i>] - Cost of a single compute unit in microLamports. <br><i style="color: #999;">If you set "sol_fee" you don't need to set this.</i> <br><pre><code>"mlamports": 2_000_000</code></pre><a href="https://www.quicknode.com/gas-tracker/solana" target="_blank"><i>Priority Fee Tracker</i></a></li>
-        </ul>
-        <p><br></p>
-        
-        <p style="color: #999; text-align: right;"><i>Copyright © 2025 Easy Pump Fun</i></p>
-        
-    </div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8">
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span class="text-sm text-primary font-medium">API Version 2.1 • Production Ready</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                Easy Pump Fun <span class="gradient-text">API Documentation</span>
+            </h1>
+            
+            <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto mb-12 leading-relaxed">
+                Easiest way to <b>BUY</b> and <b>SELL</b> on pump.fun! <span class="text-primary font-semibold">Copy Paste and Run.</span> Focus on your trading algorithm and let Easy Pump Fun handle the rest.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+                <div class="glass-panel p-6 rounded-2xl hover-lift text-left glow-border">
+                    <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 border border-primary/30">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">Zero Configuration</h3>
+                    <p class="text-sm text-slate-400">Automatically configures RPC nodes, manages program addresses, token accounts, bonding curves, and fees.</p>
+                </div>
+                
+                <div class="glass-panel p-6 rounded-2xl hover-lift text-left glow-border">
+                    <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 border border-primary/30">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">ZERO LOG Policy</h3>
+                    <p class="text-sm text-slate-400">Your data stays yours. <b>No tracking. No storage. Ever.</b> End-to-end encryption for all requests.</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl hover-lift text-left glow-border">
+                    <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 border border-primary/30">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">Free RPC Nodes</h3>
+                    <p class="text-sm text-slate-400">No setup required. Free tier includes shared RPC nodes. Premium users get dedicated nodes for faster, reliable performance.</p>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-2xl max-w-3xl mx-auto text-left border-l-4 border-primary glow-border">
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    Designed with simplicity in mind, it allows you to execute swaps effortlessly just by simply calling the endpoint and providing the necessary parameters. API automatically configures RPC nodes (free for all user), manages all program addresses and token programs, opens and closes token accounts, connects to the bonding curve, handles Compute Units and microLamports, and more.
+                </p>
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    To further enhance security, Easy Pump Fun features end-to-end encryption for all requests, IP whitelisting for controlled access (available for subscription plans only) and more.
+                </p>
+                <p class="text-slate-300 leading-relaxed font-semibold text-primary">
+                    Subscribers get access to dedicated RPC node exclusive to individual account. So there are no bottlenecks caused by other users.
+                </p>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-slate-400 text-sm">
+                    <span class="text-primary font-semibold">PREMIUM API</span> provides advanced features including token sniping, uptime guarantees, higher rate limits, and priority support. Contact <a href="mailto:support@easypumpfun.com" class="text-primary hover:text-white transition-colors">support@easypumpfun.com</a>
+                </p>
+                <p class="text-slate-500 text-sm mt-4">
+                    And for any other questions feel free to contact <a href="mailto:support@easypumpfun.com" class="text-primary hover:text-white transition-colors">support@easypumpfun.com</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="buy" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="endpoint-badge font-bold px-4 py-2 rounded-lg text-sm">POST</div>
+                <h2 class="text-3xl font-bold text-white">1. Buy</h2>
+            </div>
+            
+            <div class="glass-panel rounded-2xl p-6 mb-8 glow-border">
+                <code class="text-lg sm:text-xl text-primary font-mono break-all">https://api.easypumpfun.com/buy</code>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden glow-border">
+                <div class="flex border-b border-white/10">
+                    <button onclick="switchTab('buy', 'python')" id="tab-buy-python" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-900 bg-primary transition-all">Python</button>
+                    <button onclick="switchTab('buy', 'nodejs')" id="tab-buy-nodejs" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-400 hover:text-white transition-all">Node.js</button>
+                </div>
+                
+                <div id="content-buy-python" class="tab-content p-6 animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">Request Example</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-python">import requests
+
+url = "https://api.easypumpfun.com/buy"
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "sol_in": 0.5,
+    "slippage": 2,
+    "sol_fee": 0.0001
+}
+
+response = requests.post(url, json=data)
+
+print("Status Code:", response.status_code)
+print("Response:", response.json())</code></pre>
+                </div>
+
+                <div id="content-buy-nodejs" class="tab-content p-6 hidden animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">Request Example</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-javascript">const axios = require('axios');
+
+const url = "https://api.easypumpfun.com/buy";
+const data = {
+    keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    sol_in: 0.5,
+    slippage: 2,
+    sol_fee: 0.0001
+};
+
+axios.post(url, data).then(response => {
+        console.log("Status Code:", response.status);
+        console.log("Response:", response.data);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sell" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="endpoint-badge font-bold px-4 py-2 rounded-lg text-sm">POST</div>
+                <h2 class="text-3xl font-bold text-white">2. SELL</h2>
+            </div>
+            
+            <div class="glass-panel rounded-2xl p-6 mb-8 glow-border">
+                <code class="text-lg sm:text-xl text-primary font-mono break-all">https://api.easypumpfun.com/sell</code>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden glow-border">
+                <div class="flex border-b border-white/10">
+                    <button onclick="switchTab('sell', 'python')" id="tab-sell-python" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-900 bg-primary transition-all">Python</button>
+                    <button onclick="switchTab('sell', 'nodejs')" id="tab-sell-nodejs" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-400 hover:text-white transition-all">Node.js</button>
+                </div>
+                
+                <div id="content-sell-python" class="tab-content p-6 animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">Request Example</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-python">import requests
+
+url = "https://api.easypumpfun.com/sell"
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "percentage": 75,
+    "slippage": 2,
+    "sol_fee": 0.0001
+}
+
+response = requests.post(url, json=data)
+
+print("Status Code:", response.status_code)
+print("Response:", response.json())</code></pre>
+                </div>
+
+                <div id="content-sell-nodejs" class="tab-content p-6 hidden animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">Request Example</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-javascript">const axios = require('axios');
+
+const url = "https://api.easypumpfun.com/sell";
+const data = {
+    keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    percentage: 75,
+    slippage": 2,
+    sol_fee: 0.0001
+};
+
+axios.post(url, data).then(response => {
+        console.log("Status Code:", response.status);
+        console.log("Response:", response.data);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="responses" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl font-bold text-white mb-12">3. Responses</h2>
+            
+            <div class="space-y-8">
+                <div class="glass-panel rounded-2xl p-8 glow-border">
+                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm border border-primary/30">3.1</span>
+                        Response status code
+                    </h3>
+                    
+                    <div class="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-6 inline-flex items-center gap-3">
+                        <span class="text-primary font-mono font-bold text-lg">Status Code: 200</span>
+                    </div>
+                    
+                    <p class="text-slate-300 leading-relaxed mb-6">
+                        A response status code <code class="bg-slate-700 text-primary px-2 py-1 rounded text-sm font-mono"><b>200</b></code> means the API is functioning correctly and handling requests as expected. Any other status code indicates an issue with the API. Even if the status code is <code class="bg-slate-700 text-primary px-2 py-1 rounded text-sm font-mono"><b>200</b></code> the transaction can still fail. This indicates that the API is functioning correctly but the transaction failed due to an incorrect setup or another issue.
+                    </p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-8 glow-border">
+                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm border border-primary/30">3.2</span>
+                        Response Body
+                    </h3>
+                    
+                    <pre class="code-block rounded-xl overflow-x-auto mb-8"><code class="language-json">{
+    "failed": {
+        "message": null,
+        "status": false
+    },
+    "signature": "4ci6dTW6D6ocnKiT8qzD9Bg89wpWx5KeXW2h8JTqeZfk6zKF81AbYUnKuEcTQmdma7Q2mBnutZEW89ZCYpADfzo1"
+}</code></pre>
+
+                    <div class="space-y-6 text-slate-300">
+                        <div class="border-l-2 border-primary pl-6">
+                            <h4 class="text-white font-semibold mb-2">failed</h4>
+                            <p class="text-sm text-slate-400 mb-2">This field provides information about whether the transaction failed. It contains two subfields:</p>
+                            <ul class="space-y-3 mt-3">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-primary font-mono text-sm mt-1">message</span>
+                                    <span class="text-sm">A description of the issue if the transaction failed. If transaction succeeds it's None.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-primary font-mono text-sm mt-1">status</span>
+                                    <span class="text-sm">A boolean indicating if the transaction failed. If False the transaction did not fail. If True the transaction failed.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="border-l-2 border-primary/60 pl-6">
+                            <h4 class="text-white font-semibold mb-2">signature</h4>
+                            <p class="text-sm">Hash for the completed transaction. If the transaction fails, this field might still be present if the API successfully processed the request but encountered an issue with the transaction completion.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="payload" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl font-bold text-white mb-12">4. Payload explained</h2>
+
+            <div class="glass-panel rounded-2xl p-8 mb-8 glow-border">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold border border-primary/30">BUY EXAMPLE</span>
+                </div>
+                
+                <pre class="code-block rounded-xl overflow-x-auto mb-6"><code class="language-python">#FOR BUY
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "sol_in": 0.5,
+    "slippage": 2,
+    "sol_fee": 0.0001
+}</code></pre>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Token CA</span>
+                        <code class="text-primary text-xs font-mono">9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Buy token for</span>
+                        <code class="text-primary text-sm font-mono">0.5 SOL</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Slippage</span>
+                        <code class="text-primary text-sm font-mono">2%</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Fees cost</span>
+                        <code class="text-primary text-sm font-mono">0.0001 SOL</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-8 mb-12 glow-border">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold border border-primary/30">SELL EXAMPLE</span>
+                </div>
+                
+                <pre class="code-block rounded-xl overflow-x-auto mb-6"><code class="language-python">#FOR SELL
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "percentage": 100,
+    "slippage": 2,
+    "compute": 100_000,
+    "mlamports": 2_000_000
+}</code></pre>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Token CA</span>
+                        <code class="text-primary text-xs font-mono">9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Sell percentage</span>
+                        <code class="text-primary text-sm font-mono">100%</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Slippage</span>
+                        <code class="text-primary text-sm font-mono">2%</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">Compute Units</span>
+                        <code class="text-primary text-sm font-mono">100_000</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10 sm:col-span-2">
+                        <span class="text-slate-400 text-sm">microLamports</span>
+                        <code class="text-primary text-sm font-mono">2_000_000</code>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-8">4.1 Wallet and Token</h3>
+            
+            <div class="space-y-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 border-l-4 border-red-500 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">keypair</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">string</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">Your private key for the wallet you want to use.</p>
+                    <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4">
+                        <p class="text-red-400 text-sm font-bold flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            DO NOT SHARE THIS WITH ANYONE!
+                        </p>
+                    </div>
+                    <a href="https://www.youtube.com/watch?v=xS5VllDRyMc&ab_channel=BleepingWorld" target="_blank" class="text-primary hover:text-white text-sm flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                        How to find your private key in Phantom Wallet
+                    </a>
+                    <pre class="mt-4 code-block rounded-lg p-4"><code class="text-sm">"keypair": 2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">mint</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">string</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">Token's contract address (CA).</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"mint": 9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></pre>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-8">4.2 SOL amount</h3>
+            
+            <div class="space-y-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">sol_in</h4>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-mono border border-primary/30">float</span>
+                            <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300">BUY only</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-300 mb-4">Amount of SOL you want to spend buying the token.</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"sol_in": 0.3 (buy for 0.3 SOL)</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">percentage</h4>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-mono border border-primary/30">float</span>
+                            <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300">SELL only</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-300 mb-4">Percentage of token holdings you want to sell.</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"percentage": 50 (sell 50% of your tokens)</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">slippage</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">float</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">The acceptable slippage percentage for the transaction. Higher values increase the likelihood of a successful transaction.</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"slippage": 2 (if unsure set it to 2%)</code></pre>
+                    
+                    <div class="mt-6 bg-slate-800/50 rounded-lg p-6 border border-primary/10">
+                        <p class="text-slate-400 text-sm leading-relaxed italic">
+                            Slippage is like agreeing to a small price change while buying or selling. Let's say you set slippage to 0% while buying X amount of tokens for 1 SOL. But by the time your transaction is completed other people might also be buying, which drives the price up. If the price of the token increases by 1% during that time, the cost for X tokens would now be 1.01 SOL. Since your transaction is only set to pay 1 SOL for now 1.01 SOL worth of tokens, it will fail. In the same example if you were to set slippage to 2%, you are basically saying you are willing to pay up to 2% more than 1 SOL for that X amount of tokens. So if the price increases to 1.01 SOL, your transaction will succeed and you will pay 1.01 SOL for X amount of tokens. Notice that you only paid 1% more, meaning not all of the available slippage was used. If the price change is greater than 2%, for example 1.03 SOL, your transaction will still fail. Slippage is essentially like saying you are willing to paying up to 2% more for X tokens to make sure my transaction goes through, even if the price changes while it's being processed. Higher slippage is needed for tokens with a lot of trading activity. But don't set it too high to avoid overpaying. <span class="text-primary font-semibold not-italic">If you didn't understand any of this just set it to 2%</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 mb-12">
+                <p class="text-amber-200 text-sm">
+                    All the parameters listed above are <b>required</b> and the API cannot function without them. When determining transaction fee costs you have two options. Either set the fee automatically by specifying the desired amount in SOL. Or configure it manually by providing the Compute Units and microLamports. <b>One of these two methods must be used. Otherwise the transaction cannot be completed without setting up the fees</b>
+                </p>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-8">4.3 Transaction fees</h3>
+            
+            <div class="bg-slate-800/50 rounded-2xl p-6 mb-8 border border-primary/10">
+                <p class="text-slate-300 leading-relaxed">
+                    <b class="text-primary">Easy Pump Fun API doesn't charge you any fees.</b> However for every transaction you'll pay an additional 1% of the transaction value to Pump Fun (nothing you can do about it). Plus if you're buying a token for the first time a little bit more than 0.002 SOL will be charged to create the token account in your wallet (also nothing you can do about it).
+                </p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">sol_fee</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">float</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">Amount of SOL you want to use for fees. It will be added on top of the transaction cost.</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"sol_fee": 0.0001</code></pre>
+                    <p class="text-slate-500 text-sm mt-4 italic">Keep in mind that if you configure fees this way, the actual cost may not be exact but will be approximately around the specified value.</p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 border-l-4 border-slate-600 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">compute</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">int</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">Maximum number of compute units to be used for the transaction.</p>
+                    <p class="text-slate-500 text-sm mb-4"><i>If you set "sol_fee" you don't need to set this.</i></p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"compute": 100_000</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 border-l-4 border-slate-600 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">mlamports</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">int</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">Cost of a single compute unit in microLamports.</p>
+                    <p class="text-slate-500 text-sm mb-4"><i>If you set "sol_fee" you don't need to set this.</i></p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"mlamports": 2_000_000</code></pre>
+                    <a href="https://www.quicknode.com/gas-tracker/solana" target="_blank" class="text-primary hover:text-white text-sm flex items-center gap-2 mt-4 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                        Priority Fee Tracker
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-primary/20 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <img src="img.png" alt="Easy Pump.Fun API" class="w-8 h-8 object-contain opacity-80">
+                <p class="text-slate-500 text-sm italic">Copyright © 2026 Easy Pump Fun</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="mailto:support@easypumpfun.com" class="text-slate-400 hover:text-primary text-sm transition-colors">support@easypumpfun.com</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            hljs.highlightAll();
+        });
+
+        function switchTab(section, language) {
+            const contents = document.querySelectorAll(`[id^="content-${section}-"]`);
+            contents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            document.getElementById(`content-${section}-${language}`).classList.remove('hidden');
+            
+            const tabs = document.querySelectorAll(`[id^="tab-${section}-"]`);
+            tabs.forEach(tab => {
+                tab.classList.remove('bg-primary', 'text-slate-900');
+                tab.classList.add('text-slate-400');
+            });
+            
+            const activeTab = document.getElementById(`tab-${section}-${language}`);
+            activeTab.classList.remove('text-slate-400');
+            activeTab.classList.add('bg-primary', 'text-slate-900');
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const sections = ['intro', 'buy', 'sell', 'responses', 'payload'];
+            const scrollPosition = window.scrollY + 100;
+
+            sections.forEach(section => {
+                const element = document.getElementById(section);
+                if (element) {
+                    const offsetTop = element.offsetTop;
+                    const offsetHeight = element.offsetHeight;
+                    
+                    if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+                        document.querySelectorAll('nav a').forEach(link => {
+                            link.classList.remove('text-primary');
+                            link.classList.add('text-slate-300');
+                        });
+                        
+                        const activeLink = document.querySelector(`nav a[href="#${section}"]`);
+                        if (activeLink) {
+                            activeLink.classList.remove('text-slate-300');
+                            activeLink.classList.add('text-primary');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
