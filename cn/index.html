@@ -1,1 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Pump Fun 买入与卖出 API</title>
+    <link rel="icon" type="image/webp" href="img.webp">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        primary: '#85d2ff',
+                        secondary: '#0f172a',
+                        accent: '#60a5fa',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(133, 210, 255, 0.1);
+        }
+        .code-block {
+            background: #0d1117;
+            border: 1px solid rgba(133, 210, 255, 0.1);
+        }
+        .tab-active {
+            background: linear-gradient(90deg, #85d2ff 0%, #60a5fa 100%);
+            color: #0f172a;
+            font-weight: 600;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #85d2ff 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .endpoint-badge {
+            background: linear-gradient(90deg, #85d2ff 0%, #60a5fa 100%);
+            color: #0f172a;
+        }
+        .security-badge {
+            background: rgba(133, 210, 255, 0.1);
+            border: 1px solid rgba(133, 210, 255, 0.3);
+            color: #85d2ff;
+        }
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(133, 210, 255, 0.1);
+        }
+        .logo-glow {
+            filter: drop-shadow(0 0 20px rgba(133, 210, 255, 0.3));
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #85d2ff;
+        }
+        .glow-border {
+            box-shadow: 0 0 20px rgba(133, 210, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen">
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-primary/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <img src="img.webp" alt="Easy Pump.Fun API 买入卖出" class="w-12 h-12 object-contain logo-glow rounded-lg">
+                        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full -z-10"></div>
+                    </div>
+                    <div>
+                        <span class="font-bold text-xl tracking-tight text-white block">Easy Pump Fun</span>
+                        <span class="text-xs text-primary/80 font-medium">API 文档</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#intro" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">概览</a>
+                    <a href="#buy" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">买入 API</a>
+                    <a href="#sell" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">卖出 API</a>
+                    <a href="#responses" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">响应</a>
+                    <a href="#payload" class="text-slate-300 hover:text-primary transition-colors text-sm font-medium">参数说明</a>
+                </div>
+                    <a href="mailto:support@easypumpfun.com" class="flex items-center gap-2 px-6 py-2 rounded-full bg-primary text-slate-900 font-semibold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/25">
+                        <span>获取高级版</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+            </div>
+        </div>
+    </nav>
 
+    <section id="intro" class="pt-36 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent pointer-events-none"></div>
+        
+        <div class="max-w-5xl mx-auto text-center animate-slide-up">
+            <div class="mb-10 flex justify-center">
+                <div class="relative">
+                    <img src="img.webp" alt="Easy Pump.Fun API 买入卖出" class="w-32 h-32 object-contain logo-glow rounded-2xl">
+                    <div class="absolute inset-0 bg-primary/30 blur-3xl rounded-full -z-10 animate-pulse-slow"></div>
+                </div>
+            </div>
+
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8">
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span class="text-sm text-primary font-medium">API 版本 2.1 • 已可用于生产环境</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                Easy Pump Fun <span class="gradient-text">API 文档</span>
+            </h1>
+            
+            <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto mb-12 leading-relaxed">
+                在 pump.fun 上<b>买入</b>和<b>卖出</b>的最简单方式！<span class="text-primary font-semibold">复制、粘贴、运行。</span>把精力留给你的交易算法，其余交给 Easy Pump Fun。
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+                <div class="glass-panel p-6 rounded-2xl hover-lift text-left glow-border">
+                    <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 border border-primary/30">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">零配置</h3>
+                    <p class="text-sm text-slate-400">自动配置 RPC 节点，管理程序地址、代币账户、联合曲线（bonding curve）以及手续费等细节。</p>
+                </div>
+                
+                <div class="glass-panel p-6 rounded-2xl hover-lift text-left glow-border">
+                    <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 border border-primary/30">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">零日志政策</h3>
+                    <p class="text-sm text-slate-400">你的数据始终归你所有。<b>不追踪、不存储，永不例外。</b>所有请求均采用端到端加密。</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl hover-lift text-left glow-border">
+                    <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 border border-primary/30">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    </div>
+                    <h3 class="font-semibold text-white mb-2">免费 RPC 节点</h3>
+                    <p class="text-sm text-slate-400">无需任何配置。免费版提供共享 RPC 节点；高级用户可使用专属节点，速度更快、更稳定。</p>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-2xl max-w-3xl mx-auto text-left border-l-4 border-primary glow-border">
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    Easy Pump Fun 的设计初衷就是简单易用：只需调用端点并传入必要参数，即可完成交易。API 会自动配置 RPC 节点（所有用户免费）、管理所有程序地址和代币程序、自动创建和关闭代币账户、连接联合曲线（bonding curve）、处理计算单元（Compute Units）和 microLamports 等细节。
+                </p>
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    为增强安全性，Easy Pump Fun 对所有请求启用端到端加密，并支持 IP 白名单访问控制（仅订阅套餐可用）。
+                </p>
+                <p class="text-slate-300 leading-relaxed font-semibold text-primary">
+                    订阅用户可获得账户专属的独立 RPC 节点，不会因其他用户而出现瓶颈。
+                </p>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-slate-400 text-sm">
+                    <span class="text-primary font-semibold">高级 API</span> 提供代币狙击、服务可用性保障（SLA）、更高的调用频率限制以及优先技术支持等高级功能。请联系 <a href="mailto:support@easypumpfun.com" class="text-primary hover:text-white transition-colors">support@easypumpfun.com</a>
+                </p>
+                <p class="text-slate-500 text-sm mt-4">
+                    如有其他疑问，欢迎随时联系 <a href="mailto:support@easypumpfun.com" class="text-primary hover:text-white transition-colors">support@easypumpfun.com</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="buy" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="endpoint-badge font-bold px-4 py-2 rounded-lg text-sm">POST</div>
+                <h2 class="text-3xl font-bold text-white">1. 买入</h2>
+            </div>
+            
+            <div class="glass-panel rounded-2xl p-6 mb-8 glow-border">
+                <code class="text-lg sm:text-xl text-primary font-mono break-all">https://api.easypumpfun.com/buy</code>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden glow-border">
+                <div class="flex border-b border-white/10">
+                    <button onclick="switchTab('buy', 'python')" id="tab-buy-python" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-900 bg-primary transition-all">Python</button>
+                    <button onclick="switchTab('buy', 'nodejs')" id="tab-buy-nodejs" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-400 hover:text-white transition-all">Node.js</button>
+                </div>
+                
+                <div id="content-buy-python" class="tab-content p-6 animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">请求示例</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-python">import requests
+
+url = "https://api.easypumpfun.com/buy"
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "sol_in": 0.5,
+    "slippage": 2,
+    "sol_fee": 0.0001
+}
+
+response = requests.post(url, json=data)
+
+print("Status Code:", response.status_code)
+print("Response:", response.json())</code></pre>
+                </div>
+
+                <div id="content-buy-nodejs" class="tab-content p-6 hidden animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">请求示例</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-javascript">const axios = require('axios');
+
+const url = "https://api.easypumpfun.com/buy";
+const data = {
+    keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    sol_in: 0.5,
+    slippage: 2,
+    sol_fee: 0.0001
+};
+
+axios.post(url, data).then(response => {
+        console.log("Status Code:", response.status);
+        console.log("Response:", response.data);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sell" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="endpoint-badge font-bold px-4 py-2 rounded-lg text-sm">POST</div>
+                <h2 class="text-3xl font-bold text-white">2. 卖出</h2>
+            </div>
+            
+            <div class="glass-panel rounded-2xl p-6 mb-8 glow-border">
+                <code class="text-lg sm:text-xl text-primary font-mono break-all">https://api.easypumpfun.com/sell</code>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden glow-border">
+                <div class="flex border-b border-white/10">
+                    <button onclick="switchTab('sell', 'python')" id="tab-sell-python" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-900 bg-primary transition-all">Python</button>
+                    <button onclick="switchTab('sell', 'nodejs')" id="tab-sell-nodejs" class="tab-btn flex-1 py-4 px-6 text-sm font-medium text-slate-400 hover:text-white transition-all">Node.js</button>
+                </div>
+                
+                <div id="content-sell-python" class="tab-content p-6 animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">请求示例</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-python">import requests
+
+url = "https://api.easypumpfun.com/sell"
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "percentage": 75,
+    "slippage": 2,
+    "sol_fee": 0.0001
+}
+
+response = requests.post(url, json=data)
+
+print("Status Code:", response.status_code)
+print("Response:", response.json())</code></pre>
+                </div>
+
+                <div id="content-sell-nodejs" class="tab-content p-6 hidden animate-fade-in">
+                    <h3 class="text-sm font-semibold text-primary mb-4 uppercase tracking-wider">请求示例</h3>
+                    <pre class="code-block rounded-xl overflow-x-auto"><code class="language-javascript">const axios = require('axios');
+
+const url = "https://api.easypumpfun.com/sell";
+const data = {
+    keypair: "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    mint: "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    percentage: 75,
+    slippage: 2,
+    sol_fee: 0.0001
+};
+
+axios.post(url, data).then(response => {
+        console.log("Status Code:", response.status);
+        console.log("Response:", response.data);
+});</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="responses" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl font-bold text-white mb-12">3. 响应</h2>
+            
+            <div class="space-y-8">
+                <div class="glass-panel rounded-2xl p-8 glow-border">
+                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm border border-primary/30">3.1</span>
+                        响应状态码
+                    </h3>
+                    
+                    <div class="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-6 inline-flex items-center gap-3">
+                        <span class="text-primary font-mono font-bold text-lg">状态码：200</span>
+                    </div>
+                    
+                    <p class="text-slate-300 leading-relaxed mb-6">
+                        响应状态码 <code class="bg-slate-700 text-primary px-2 py-1 rounded text-sm font-mono"><b>200</b></code> 表示 API 运行正常，正在按预期处理请求。其他任何状态码都说明 API 出现了问题。需要注意的是：即使状态码为 <code class="bg-slate-700 text-primary px-2 py-1 rounded text-sm font-mono"><b>200</b></code>，交易本身仍可能失败。这说明 API 工作正常，但交易因配置不当或其他原因未能完成。
+                    </p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-8 glow-border">
+                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm border border-primary/30">3.2</span>
+                        响应正文
+                    </h3>
+                    
+                    <pre class="code-block rounded-xl overflow-x-auto mb-8"><code class="language-json">{
+    "failed": {
+        "message": null,
+        "status": false
+    },
+    "signature": "4ci6dTW6D6ocnKiT8qzD9Bg89wpWx5KeXW2h8JTqeZfk6zKF81AbYUnKuEcTQmdma7Q2mBnutZEW89ZCYpADfzo1"
+}</code></pre>
+
+                    <div class="space-y-6 text-slate-300">
+                        <div class="border-l-2 border-primary pl-6">
+                            <h4 class="text-white font-semibold mb-2">failed</h4>
+                            <p class="text-sm text-slate-400 mb-2">该字段表示交易是否失败，包含两个子字段：</p>
+                            <ul class="space-y-3 mt-3">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-primary font-mono text-sm mt-1">message</span>
+                                    <span class="text-sm">交易失败时的问题描述。若交易成功，该字段为 None。</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-primary font-mono text-sm mt-1">status</span>
+                                    <span class="text-sm">布尔值，表示交易是否失败。False 表示未失败；True 表示失败。</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="border-l-2 border-primary/60 pl-6">
+                            <h4 class="text-white font-semibold mb-2">signature</h4>
+                            <p class="text-sm">已完成交易的哈希值。如果交易失败，当 API 已成功处理请求但交易本身完成失败时，该字段仍可能出现。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="payload" class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl font-bold text-white mb-12">4. 参数详解</h2>
+
+            <div class="glass-panel rounded-2xl p-8 mb-8 glow-border">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold border border-primary/30">买入示例</span>
+                </div>
+                
+                <pre class="code-block rounded-xl overflow-x-auto mb-6"><code class="language-python"># 买入
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "sol_in": 0.5,
+    "slippage": 2,
+    "sol_fee": 0.0001
+}</code></pre>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">代币合约地址</span>
+                        <code class="text-primary text-xs font-mono break-all">9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">买入金额</span>
+                        <code class="text-primary text-sm font-mono">0.5 SOL</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">滑点</span>
+                        <code class="text-primary text-sm font-mono">2%</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">手续费</span>
+                        <code class="text-primary text-sm font-mono">0.0001 SOL</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-8 mb-12 glow-border">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold border border-primary/30">卖出示例</span>
+                </div>
+                
+                <pre class="code-block rounded-xl overflow-x-auto mb-6"><code class="language-python"># 卖出
+data = {
+    "keypair": "2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7",
+    "mint": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "percentage": 100,
+    "slippage": 2,
+    "compute": 100_000,
+    "mlamports": 2_000_000
+}</code></pre>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">代币合约地址</span>
+                        <code class="text-primary text-xs font-mono break-all">9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">卖出比例</span>
+                        <code class="text-primary text-sm font-mono">100%</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">滑点</span>
+                        <code class="text-primary text-sm font-mono">2%</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10">
+                        <span class="text-slate-400 text-sm">计算单元</span>
+                        <code class="text-primary text-sm font-mono">100_000</code>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg border border-primary/10 sm:col-span-2">
+                        <span class="text-slate-400 text-sm">microLamports</span>
+                        <code class="text-primary text-sm font-mono">2_000_000</code>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-8">4.1 钱包与代币</h3>
+            
+            <div class="space-y-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 border-l-4 border-red-500 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">keypair</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">string</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">你所使用钱包的私钥。</p>
+                    <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4">
+                        <p class="text-red-400 text-sm font-bold flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            切勿与任何人分享！
+                        </p>
+                    </div>
+                    <a href="https://www.youtube.com/watch?v=xS5VllDRyMc&ab_channel=BleepingWorld" target="_blank" class="text-primary hover:text-white text-sm flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                        如何在 Phantom 钱包中查看你的私钥
+                    </a>
+                    <pre class="mt-4 code-block rounded-lg p-4"><code class="text-sm">"keypair": 2oPQn9z1OaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXNwt02aoMW7</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">mint</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">string</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">代币的合约地址（CA）。</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"mint": 9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump</code></pre>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-8">4.2 SOL 数量</h3>
+            
+            <div class="space-y-6 mb-12">
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">sol_in</h4>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-mono border border-primary/30">float</span>
+                            <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300">仅买入</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-300 mb-4">你想用于买入该代币的 SOL 数量。</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"sol_in": 0.3（用 0.3 SOL 买入）</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">percentage</h4>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-mono border border-primary/30">float</span>
+                            <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300">仅卖出</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-300 mb-4">你想卖出的代币持仓百分比。</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"percentage": 50（卖出 50% 的代币）</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">slippage</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">float</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">交易可接受的滑点百分比。数值越高，交易成功的概率越大。</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"slippage": 2（如果不确定，设为 2% 即可）</code></pre>
+                    
+                    <div class="mt-6 bg-slate-800/50 rounded-lg p-6 border border-primary/10">
+                        <p class="text-slate-400 text-sm leading-relaxed italic">
+                            滑点可以理解为：买卖时允许价格出现一定幅度的波动。举个例子，假设你把滑点设为 0%，准备用 1 SOL 买入 X 数量的代币。但在交易确认前，可能有其他人也在买入，从而推高价格。如果这期间代币价格上涨了 1%，那么 X 数量代币的成本就变成 1.01 SOL。由于你的交易只允许支付 1 SOL，而代币此时价值 1.01 SOL，交易就会失败。同样的例子，如果你把滑点设为 2%，相当于告诉系统：为了买到这 X 数量的代币，我愿意最多多付 2%。因此当价格上涨到 1.01 SOL 时，交易可以成功，你实际支付 1.01 SOL。注意此时你只多付了 1%，并未用满 2% 的滑点额度。如果价格涨幅超过 2%，例如达到 1.03 SOL，交易仍会失败。简单来说，滑点就是你愿意为成交而接受的最大价格偏差。交易越活跃的代币，通常需要设置更高的滑点。但也不宜设得太高，以免多付。<span class="text-primary font-semibold not-italic">如果你不确定，直接设为 2% 即可。</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 mb-12">
+                <p class="text-amber-200 text-sm">
+                    以上参数均为<b>必填项</b>，缺少任一参数 API 都无法正常工作。手续费设置有两种方式：一是直接指定 SOL 金额，由系统自动计算；二是手动填写计算单元（compute）和 microLamports。<b>两种方式必须二选一，否则交易无法完成。</b>
+                </p>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-8">4.3 交易手续费</h3>
+            
+            <div class="bg-slate-800/50 rounded-2xl p-6 mb-8 border border-primary/10">
+                <p class="text-slate-300 leading-relaxed">
+                    <b class="text-primary">Easy Pump Fun API 本身不收取任何费用。</b>但每笔交易你都需要额外向 Pump Fun 支付交易金额 1% 的费用（这一点无法避免）。此外，如果你是首次买入某个代币，还会被收取略高于 0.002 SOL 的费用，用于在你的钱包中创建代币账户（同样无法避免）。
+                </p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="glass-panel rounded-2xl p-6 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">sol_fee</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">float</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">你想用于支付手续费的 SOL 数量，将附加在交易成本之上。</p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"sol_fee": 0.0001</code></pre>
+                    <p class="text-slate-500 text-sm mt-4 italic">请注意：以这种方式配置手续费时，实际费用可能并不精确，但会大致接近所指定的数值。</p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 border-l-4 border-slate-600 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">compute</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">int</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">该交易可使用的最大计算单元数量。</p>
+                    <p class="text-slate-500 text-sm mb-4"><i>如果你设置了 "sol_fee"，则无需设置此项。</i></p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"compute": 100_000</code></pre>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 border-l-4 border-slate-600 glow-border">
+                    <div class="flex items-start justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-white">mlamports</h4>
+                        <span class="px-3 py-1 rounded-full bg-slate-700 text-xs text-slate-300 font-mono">int</span>
+                    </div>
+                    <p class="text-slate-300 mb-4">单个计算单元的费用，以 microLamports 计。</p>
+                    <p class="text-slate-500 text-sm mb-4"><i>如果你设置了 "sol_fee"，则无需设置此项。</i></p>
+                    <pre class="code-block rounded-lg p-4"><code class="text-sm">"mlamports": 2_000_000</code></pre>
+                    <a href="https://www.quicknode.com/gas-tracker/solana" target="_blank" class="text-primary hover:text-white text-sm flex items-center gap-2 mt-4 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                        优先费用追踪器
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-primary/20 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <img src="img.webp" alt="Easy Pump.Fun API" class="w-8 h-8 object-contain opacity-80">
+                <p class="text-slate-500 text-sm italic">版权所有 © 2026 Easy Pump Fun</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="mailto:support@easypumpfun.com" class="text-slate-400 hover:text-primary text-sm transition-colors">support@easypumpfun.com</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            hljs.highlightAll();
+        });
+
+        function switchTab(section, language) {
+            const contents = document.querySelectorAll(`[id^="content-${section}-"]`);
+            contents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            document.getElementById(`content-${section}-${language}`).classList.remove('hidden');
+            
+            const tabs = document.querySelectorAll(`[id^="tab-${section}-"]`);
+            tabs.forEach(tab => {
+                tab.classList.remove('bg-primary', 'text-slate-900');
+                tab.classList.add('text-slate-400');
+            });
+            
+            const activeTab = document.getElementById(`tab-${section}-${language}`);
+            activeTab.classList.remove('text-slate-400');
+            activeTab.classList.add('bg-primary', 'text-slate-900');
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const sections = ['intro', 'buy', 'sell', 'responses', 'payload'];
+            const scrollPosition = window.scrollY + 100;
+
+            sections.forEach(section => {
+                const element = document.getElementById(section);
+                if (element) {
+                    const offsetTop = element.offsetTop;
+                    const offsetHeight = element.offsetHeight;
+                    
+                    if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+                        document.querySelectorAll('nav a').forEach(link => {
+                            link.classList.remove('text-primary');
+                            link.classList.add('text-slate-300');
+                        });
+                        
+                        const activeLink = document.querySelector(`nav a[href="#${section}"]`);
+                        if (activeLink) {
+                            activeLink.classList.remove('text-slate-300');
+                            activeLink.classList.add('text-primary');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
